@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import axios from "axios";
-import { useEffect } from "react";
+import { DebounceInput } from "react-debounce-input";
 function App() {
   const [books, setBooks] = useState("");
   const [showBook, setShowBooks] = useState([]);
@@ -10,7 +10,6 @@ function App() {
       const result = await axios.get(
         `https://www.googleapis.com/books/v1/volumes?q=${books}`
       );
-
       setShowBooks(result.data.items);
     } catch (error) {
       console.log(error.message);
@@ -21,15 +20,17 @@ function App() {
     if (books === "") {
       setShowBooks([]);
     } else {
-      getBooks();
+      getBooks(books);
     }
   }, [books]);
   return (
     <>
       <div className="App">
         <p>Find A Book</p>
-        <input
+        <DebounceInput
           type="text"
+          minLength={2}
+          debounceTimeout={1500}
           value={books}
           onChange={(e) => {
             setBooks(e.target.value);
